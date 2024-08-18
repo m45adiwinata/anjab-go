@@ -1,0 +1,57 @@
+package pages
+
+import "goravel/resources/views/layouts"
+
+templ Login() {
+    @layouts.Template() {
+        <div class="content">
+            <div class="container">
+                <div id="header"><h1>ANJAB ABK - ONLINE</h1></div>
+                    <div class="row" id="row-box">
+                        <div class="hidden-xs col-sm-12 col-md-2 col-lg-2"></div>
+                        <div class="col-sm-12 col-sm-12 col-md-5 col-lg-5 no-padding">
+                            <div class="cover-mascot">
+                                <img src="loginform/images/singmascot.jpg" class="img-cover">
+                            </div>
+                            <div class="company-information">
+                                <img src="loginform/images/sgrjlogo.png">
+                                <h4>Bagian Organisasi</h4>
+                                <h5>KABUPATEN BULELENG</h5>
+                                <p>
+                                    Pusat Pemerintahan Kabupaten Buleleng<br>
+                                    Jl. Pahlawan, Paket Agung, Kec. Buleleng<br>
+                                    Kabupaten Buleleng, Bali<br>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-3 col-sm-3 no-padding contents bg-right">
+                        <div class="title-right-login">
+                                    <h3 style="margin-top: 10px;font-weight: 300;">LOGIN USER</h3>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-10">
+                                <div class="login-information-right">
+                                    <p class="mb-4"> Silahkan masukkan username dan password anda!</p>
+                                </div>
+                                <form action="" method="post">
+                                    @csrf
+                                    <div class="form-group first">
+                                        <label for="username">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username">
+                                    </div>
+                                    <div class="form-group last mb-4">
+                                        <label for="password">Password</label>
+                                        <input type="password" class="form-control" id="password" name="password">
+                                    </div>
+                                    <input type="submit" value="Log In" class="btn text-white btn-block btn-primary">
+                                </form>
+                            </div>
+                        </div>
+                        </div>
+                    <div class="hidden-xs col-sm-12 col-md-2 col-lg-2"></div>
+                </div>
+            </div>
+        </div>
+    }
+}
+    

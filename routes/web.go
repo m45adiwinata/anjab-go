@@ -18,4 +18,5 @@ func Web() {
 	facades.Route().Get("/dashboard", dashboardController.Index)
 	facades.Route().Static("assets", "./resources/views/assets")
 	facades.Route().Static("adminlte", "./public/adminlte")
+	facades.Route().Static("local", "./public/local")
 }
