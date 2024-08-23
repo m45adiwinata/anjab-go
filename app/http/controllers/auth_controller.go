@@ -2,14 +2,15 @@ package controllers
 
 import (
 	"fmt"
-	"time"
+	"goravel/app/models"
+	"goravel/app/usecases"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/goravel/framework/contracts/http"
-	"github.com/goravel/framework/facades"
 )
 
 type AuthController struct {
+	authUc usecases.AuthUsecase
 }
 
 type User struct {
@@ -22,34 +23,54 @@ type CustomClaim struct {
 	jwt.RegisteredClaims
 }
 
-func NewAuthController() *AuthController {
-	return &AuthController{}
+func NewAuthController(authUc usecases.AuthUsecase) *AuthController {
+	return &AuthController{
+		authUc: authUc,
+	}
 }
 
 func (r *AuthController) Login(ctx http.Context) http.Response {
-	config := facades.Config()
-	request := ctx.Request().All()
-	fmt.Println(request)
-	jwtSecret := []byte(config.Env("JWT_SECRET").(string))
-	claims := CustomClaim{
-		User{
-			Username: request["username"].(string),
-			Email:    "dummy@gmail.com",
-		},
-		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
-		},
+	request := new(models.LoginAtempt)
+	if err := ctx.Request().Bind(request); err != nil {
+		return ctx.Response().Json(http.StatusBadRequest, http.Json{
+			"error": err.Error(),
+		})
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtSecret)
+	fmt.Println(request)
+	user, token, err := r.authUc.Login(ctx.Context(), request.Email, request.Password)
 	if err != nil {
-		if err != nil {
-			return ctx.Response().Json(http.StatusInternalServerError, http.Json{"message": "failed to get token string"})
+		if err.Error() == "invalid username or password" {
+			return ctx.Response().Json(http.StatusUnauthorized, http.Json{
+				"error": err.Error(),
+			})
 		}
+		return ctx.Response().Json(http.StatusInternalServerError, http.Json{
+			"error": err.Error(),
+		})
 	}
 
 	return ctx.Response().Json(http.StatusOK, http.Json{
-		"user":  request,
-		"token": tokenString,
+		"user":  user,
+		"token": token,
+	})
+}
+
+func (r *AuthController) Register(ctx http.Context) http.Response {
+	request := new(models.User)
+	if err := ctx.Request().Bind(request); err != nil {
+		return ctx.Response().Json(http.StatusBadRequest, http.Json{
+			"error": err.Error(),
+		})
+	}
+	user, token, err := r.authUc.Register(ctx.Context(), request)
+	if err != nil {
+		return ctx.Response().Json(http.StatusInternalServerError, http.Json{
+			"error": err.Error(),
+		})
+	}
+
+	return ctx.Response().Json(http.StatusOK, http.Json{
+		"user":  user,
+		"token": token,
 	})
 }
